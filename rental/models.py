@@ -1,6 +1,7 @@
 from django.db import models
 from bookshop import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django_countries import fields
 
 
 class UserManager(BaseUserManager):
@@ -58,3 +59,34 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user
+
+
+class Author(models.Model):
+    """
+    A Model to store the Authors info
+    """
+    first_name = models.CharField(max_length=40, blank=False, help_text='First name')
+    last_name = models.CharField(max_length=40, blank=False, help_text='Last name')
+    email = models.EmailField()
+
+    def __str__(self):
+        return '%s %sa' %(self.first_name, self.last_name)
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=100, blank=False, help_text='Publisher Name')
+    country = fields.CountryField(blank_label='(select country)')
+    website = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+
+class Book(models.Model):
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    title = models.CharField(max_length=80, blank=False)
+    publication_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
