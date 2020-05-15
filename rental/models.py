@@ -84,9 +84,19 @@ class Publisher(models.Model):
 
 class Book(models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ManyToManyField(Author)
     title = models.CharField(max_length=80, blank=False)
-    publication_date = models.DateTimeField(auto_now_add=True)
+    published_date = models.DateField(null=True, blank=False)
 
     def __str__(self):
         return self.title
+
+
+class Borrowed(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='username of the borrower', on_delete=models.PROTECT)
+    borrowed_date = models.DateTimeField(auto_now_add=True)
+    title = models.ForeignKey(Book, on_delete=models.PROTECT)
+    returned_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return '%s - Borrowed By (%s)' % (self.title, self.user)

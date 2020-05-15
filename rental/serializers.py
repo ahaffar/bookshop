@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django_countries import serializers as countries_serializers
 from rental import models
 
 
@@ -50,3 +51,35 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
                 'read_only': True
             }
         }
+
+
+class PublisherSerializer(countries_serializers.CountryFieldMixin, serializers.ModelSerializer):
+    class Meta:
+        model = models.Publisher
+        fields = ['id', 'name', 'country', 'website']
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    """
+    Serializers Author Model
+    """
+
+    class Meta:
+        model = models.Author
+        fields = ['id', 'first_name', 'last_name', 'email']
+
+
+class BookSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Book
+        fields = '__all__'
+
+
+class BorrowedSerializer(serializers.ModelSerializer):
+    """
+    serializes Borrowed Model
+    """
+    class Meta:
+        model = models.Borrowed
+        fields = '__all__'
