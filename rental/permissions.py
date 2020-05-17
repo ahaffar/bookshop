@@ -15,3 +15,11 @@ class UserProfileOwnerUpdate(permissions.BasePermission):
             return True
 
         return obj.user.id == request.user.id
+
+
+class UserViewPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.has_perm('rental.view_user'):
+            return True
+        return False
+

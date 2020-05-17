@@ -10,11 +10,17 @@ class UserViewSets(viewsets.ModelViewSet):
     """
     API View for User Serializer
     """
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.none()
     serializer_class = serializers.UserSerializer
-    permission_classes = [rest_permissions.IsAuthenticated, permissions.UserUpdatePermission,]
+    permission_classes = [rest_permissions.IsAuthenticated, permissions.UserUpdatePermission,
+                          permissions.UserViewPermissions, rest_permissions.DjangoModelPermissions]
     authentication_classes = [TokenAuthentication, ]
     renderer_classes = [renderers.AdminRenderer, ]
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return models.User.objects.all()
+        return models.User.objects.filter(id=self.request.user.id)
 
 
 class AuthUser(ObtainAuthToken):

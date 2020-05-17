@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
             last_name=last_name,
         )
         user.set_password(password)
+        user.has_perm('rental.view_user')
         user.save(using=self._db)
         return user
 
