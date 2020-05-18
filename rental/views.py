@@ -1,9 +1,12 @@
-from rest_framework import viewsets, renderers
+from rest_framework import viewsets, renderers, status
+from rest_framework import generics
+from rest_framework.response import Response
 from rental import serializers, permissions, models
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework import permissions as rest_permissions
+from django.contrib.auth import models as django_models
 
 
 class UserViewSets(viewsets.ModelViewSet):
@@ -13,7 +16,7 @@ class UserViewSets(viewsets.ModelViewSet):
     queryset = models.User.objects.none()
     serializer_class = serializers.UserSerializer
     permission_classes = [rest_permissions.IsAuthenticated, permissions.UserUpdatePermission,
-                          permissions.UserViewPermissions, rest_permissions.DjangoModelPermissions]
+                          permissions.UserViewPermissions, rest_permissions.DjangoObjectPermissions]
     authentication_classes = [TokenAuthentication, ]
     renderer_classes = [renderers.AdminRenderer, ]
 
@@ -51,6 +54,8 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, ]
 
 
-
-
-
+class GroupView(viewsets.ModelViewSet):
+    queryset = django_models.Group.objects.all()
+    serializer_class = serializers.GroupSerializer
+    permission_classes = [rest_permissions.IsAuthenticated, permissions.GroupPermissions]
+    authentication_classes = [TokenAuthentication, ]
