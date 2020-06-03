@@ -1,6 +1,6 @@
 from django.db import models
 from bookshop import settings
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
 from django_countries import fields
 
 
@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
             last_name=last_name,
         )
         user.set_password(password)
-        user.has_perm('rental.view_user')
+        # user.has_perm('rental.view_user')
         user.save(using=self._db)
         return user
 
@@ -46,11 +46,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
+    class Meta:
+        verbose_name = 'user'
+        verbose_name_plural = 'users'
+
     def __str__(self):
         return self.email
 
     def get_full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def is_admin(self):
+        return self.groups.filter(name='librarians').exists()
 
 
 class UserProfile(models.Model):

@@ -1,35 +1,62 @@
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import permissions, exceptions
+import copy
+
+
+# def has_perm(user):
+#     return user.groups.filter(name__in=['librarians', ]).exists()
 
 
 class UserUpdatePermission(permissions.BasePermission):
+    """
+    This is for the /bookshop/user/ API
+    """
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-
-        return obj.user.id == request.user.id
+        return obj == request.user
 
 
 class UserProfileOwnerUpdate(permissions.BasePermission):
+    """
+    this is for /bookshop/bio/ API
+    """
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+        return obj.user == request.user
 
-        return obj.user.id == request.user.id
+
+# MODEL_NAME = 'user'
+# CRUD_OPS = ['change', 'delete', 'add', 'view']
+#
+#
+# def perms_check(user, model, app, *args):
+#     perms_list = list(user.get_all_permissions())
+#     for count, perm in enumerate(*args):
+#         if '%s.%s_%s' % (app, perm, model) in perms_list:
+#             return True
+#         return False
 
 
 class UserViewPermissions(permissions.BasePermission):
+
     def has_permission(self, request, view):
-        if request.user.has_perm('rental.view_user'):
-            return True
+        app_label = view.queryset.model._meta.app_label
+
+        if request.method == 'GET':
+            # return request.user.has_perm('rental.view_user')
+            return request.user.has_perm(str(app_label+'.'+'view_user'))
+        elif request.method == 'POST':
+            return request.user.is_admin()
+        elif request.method in ('PUT', 'PATCH'):
+            return request.user.has_perm(str(app_label+'.'+'change_user'))
+        elif request.method == 'DELETE':
+            return request.user.has_perm(str(app_label+'.'+'delete_user'))
         return False
 
+    def has_object_permission(self, request, view, obj):
+        return obj.id == request.user.id or \
+               request.user.is_admin()
 
-class GroupPermissions(permissions.BasePermission):
-    message = 'you are not authorized to access this view - please contact administrator'
-    def has_permission(self, request, view):
-
-        if request.method in permissions.SAFE_METHODS:
-            return request.user.is_superuser
-        return Response({'detail': self.message}, status=status.HTTP_403_FORBIDDEN)

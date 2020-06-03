@@ -13,17 +13,13 @@ class UserViewSets(viewsets.ModelViewSet):
     """
     API View for User Serializer
     """
-    queryset = models.User.objects.none()
     serializer_class = serializers.UserSerializer
-    permission_classes = [rest_permissions.IsAuthenticated, permissions.UserUpdatePermission,
-                          permissions.UserViewPermissions, rest_permissions.DjangoObjectPermissions]
+    # permission_classes = [permissions.UserPermission,
+    #                       ]
     authentication_classes = [TokenAuthentication, ]
+    queryset = models.User.objects.all()
     renderer_classes = [renderers.AdminRenderer, ]
-
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return models.User.objects.all()
-        return models.User.objects.filter(id=self.request.user.id)
+    permission_classes = [permissions.UserViewPermissions]
 
 
 class AuthUser(ObtainAuthToken):
@@ -54,8 +50,4 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, ]
 
 
-class GroupView(viewsets.ModelViewSet):
-    queryset = django_models.Group.objects.all()
-    serializer_class = serializers.GroupSerializer
-    permission_classes = [rest_permissions.IsAuthenticated, permissions.GroupPermissions]
-    authentication_classes = [TokenAuthentication, ]
+
