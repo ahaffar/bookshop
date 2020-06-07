@@ -27,10 +27,12 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
-#custom
+#Virtual env folders
 
 rental-env
 rental-env/*
+venv
+venv/*
 
 # Gradle
 .idea/**/gradle.xml
