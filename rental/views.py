@@ -19,7 +19,7 @@ class UserViewSets(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, ]
     queryset = models.User.objects.all()
     renderer_classes = [renderers.AdminRenderer, ]
-    permission_classes = [permissions.UserViewPermissions]
+    permission_classes = [rest_permissions.IsAuthenticated, permissions.UserViewPermissions]
 
 
 class AuthUser(ObtainAuthToken):

@@ -2,7 +2,7 @@ from rental import views
 from rest_framework import routers
 from django.urls import path, include
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register('users', views.UserViewSets,)
 router.register('bio', views.UserProfileViewSets, )
 router.register('publishers', views.PublisherViewSets, )

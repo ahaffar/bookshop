@@ -54,15 +54,16 @@ class UserViewPermissions(permissions.BasePermission):
         app_label = view.queryset.model._meta.app_label
         model_name = view.queryset.model._meta.model_name
 
-        if request.method == 'GET':
-            # return request.user.has_perm('rental.view_user')
-            return request.user.has_perm(str(app_label+'.'+PERMS_MAP[request.method]+model_name))
+        if request.method in permissions.SAFE_METHODS:
+            return True
         elif request.method == 'POST':
-            return request.user.is_admin()
+            return request.user.is_admin() or request.user.is_superuser
         elif request.method in ('PUT', 'PATCH'):
-            return request.user.has_perm(str(app_label+'.'+PERMS_MAP[request.method]+model_name))
+            return request.user.has_perm(str(app_label+'.'+PERMS_MAP[request.method]+model_name)) or \
+                   request.user.is_superuser
         elif request.method == 'DELETE':
-            return request.user.has_perm(str(app_label+'.'+PERMS_MAP[request.method]+model_name))
+            return request.user.has_perm(str(app_label+'.'+PERMS_MAP[request.method]+model_name)) or \
+                   request.user.is_superuser
         return False
 
     def has_object_permission(self, request, view, obj):
