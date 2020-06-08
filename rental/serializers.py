@@ -86,3 +86,15 @@ class BorrowedSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class GroupSerializer(serializers.ModelSerializer):
+    user_set = serializers.PrimaryKeyRelatedField(many=True, queryset=models.User.objects.all(), required=False, label='username')
+
+    class Meta:
+        model = Group
+        fields = ['user_set',
+                  'name', 'permissions']
+        extra_kwargs = {
+            'permissions': {
+                'write_only': True,
+            },
+        }

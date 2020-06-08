@@ -26,6 +26,12 @@ class AuthUser(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
+class GroupViews(viewsets.ModelViewSet):
+    serializer_class = serializers.GroupSerializer
+    queryset = django_models.Group.objects.all()
+    renderer_classes = [renderers.AdminRenderer]
+
+
 class UserProfileViewSets(viewsets.ModelViewSet):
 
     authentication_classes = [TokenAuthentication, ]
