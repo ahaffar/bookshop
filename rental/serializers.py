@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django_countries import serializers as countries_serializers
 from rental import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
+from rental.apps import RentalConfig
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -71,7 +72,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.Book
         fields = '__all__'
@@ -81,20 +81,19 @@ class BorrowedSerializer(serializers.ModelSerializer):
     """
     serializes Borrowed Model
     """
+
     class Meta:
         model = models.Borrowed
         fields = '__all__'
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    user_set = serializers.PrimaryKeyRelatedField(many=True, queryset=models.User.objects.all(), required=False, label='username')
+    users = serializers.PrimaryKeyRelatedField(many=True, queryset=models.User.objects.filter(is_superuser=0),
+                                               source='user_set', )
+    permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.filter(
+        content_type__app_label=RentalConfig.name), write_only=True)
 
     class Meta:
         model = Group
-        fields = ['user_set',
+        fields = ['users',
                   'name', 'permissions']
-        extra_kwargs = {
-            'permissions': {
-                'write_only': True,
-            },
-        }
