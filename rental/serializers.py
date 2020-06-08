@@ -87,13 +87,13 @@ class BorrowedSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    users = serializers.PrimaryKeyRelatedField(many=True, queryset=models.User.objects.filter(is_superuser=0),
-                                               source='user_set', )
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    users = serializers.SlugRelatedField(many=True, queryset=models.User.objects.filter(is_superuser=0),
+                                         source='user_set', slug_field='email')
     permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.filter(
         content_type__app_label=RentalConfig.name), write_only=True)
 
     class Meta:
         model = Group
         fields = ['users',
-                  'name', 'permissions']
+                  'name', 'permissions', 'id']

@@ -29,7 +29,7 @@ class AuthUser(ObtainAuthToken):
 class GroupViews(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = django_models.Group.objects.all()
-    renderer_classes = [renderers.AdminRenderer]
+    renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer]
 
 
 class UserProfileViewSets(viewsets.ModelViewSet):
