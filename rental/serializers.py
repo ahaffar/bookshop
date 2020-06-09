@@ -90,10 +90,15 @@ class BorrowedSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     users = serializers.SlugRelatedField(many=True, queryset=models.User.objects.filter(is_superuser=0),
                                          source='user_set', slug_field='email')
-    permissions = serializers.PrimaryKeyRelatedField(many=True, queryset=Permission.objects.filter(
-        content_type__app_label=RentalConfig.name), write_only=True)
+    permissions = serializers.SlugRelatedField(many=True, queryset=Permission.objects.filter(
+        content_type__app_label=RentalConfig.name), slug_field='name')
 
     class Meta:
         model = Group
         fields = ['users',
-                  'name', 'permissions', 'id']
+                  'name', 'permissions', 'url']
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'name'
+            }
+        }

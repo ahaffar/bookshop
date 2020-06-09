@@ -30,6 +30,7 @@ class GroupViews(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     queryset = django_models.Group.objects.all()
     renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer]
+    lookup_field = 'name'
 
 
 class UserProfileViewSets(viewsets.ModelViewSet):
