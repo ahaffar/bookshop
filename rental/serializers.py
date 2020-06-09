@@ -5,21 +5,24 @@ from django.contrib.auth.models import Group, Permission
 from rental.apps import RentalConfig
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializers User Model
     """
-    url = serializers.CharField(source='get_absolute_url', read_only=True)
+    # url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = models.User
-        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'url']
+        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'url', 'username']
         extra_kwargs = {
             'password': {
                 'write_only': True,
                 'style': {
                     'input_type': 'password'
                 }
+            },
+            'url': {
+                'lookup_field': 'username'
             }
         }
 

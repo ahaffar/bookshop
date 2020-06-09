@@ -1,7 +1,10 @@
 from django.db import models
 from bookshop import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
+from django.contrib.auth import validators
 from django_countries import fields
+from django.db.models import signals
+from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
@@ -40,11 +43,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    username = models.CharField(max_length=15, unique=True, null=True, blank=False,
+                                validators=(validators.UnicodeUsernameValidator, ))
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 
     class Meta:
         verbose_name = 'user'
@@ -64,6 +69,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user

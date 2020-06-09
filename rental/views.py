@@ -20,6 +20,7 @@ class UserViewSets(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     renderer_classes = [renderers.AdminRenderer, ]
     permission_classes = [rest_permissions.IsAuthenticated, permissions.UserViewPermissions]
+    lookup_field = 'username'
 
 
 class AuthUser(ObtainAuthToken):

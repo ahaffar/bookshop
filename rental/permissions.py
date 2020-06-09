@@ -67,6 +67,6 @@ class UserViewPermissions(permissions.BasePermission):
         return False
 
     def has_object_permission(self, request, view, obj):
-        return obj.id == request.user.id or \
-               request.user.is_admin()
+        return obj.username == request.user.username or \
+               request.user.is_admin() or request.user.is_superuser
 
