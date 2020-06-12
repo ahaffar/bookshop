@@ -1,6 +1,6 @@
 from django.db import models
 from bookshop import settings
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.contrib.auth import validators
 from django_countries import fields
 from django.db.models import signals

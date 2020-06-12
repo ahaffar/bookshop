@@ -23,7 +23,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             },
             'url': {
                 'lookup_field': 'username'
-            }
+            },
+            'email': {
+                'read_only': True
+            },
         }
 
     def create(self, validated_data):
