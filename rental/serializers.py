@@ -10,6 +10,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     Serializers User Model
     """
     # url = serializers.CharField(source='get_absolute_url', read_only=True)
+    url = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field='username', read_only=True)
 
     class Meta:
         model = models.User
@@ -20,9 +21,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                 'style': {
                     'input_type': 'password'
                 }
-            },
-            'url': {
-                'lookup_field': 'username'
             },
             'email': {
                 'read_only': True
@@ -45,19 +43,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             return super().update(instance, validated_data)
 
 
-class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.CharField(source='get_absolute_url', read_only=True)
+class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ['id', 'user', 'bio', 'created_on', 'url']
+        fields = ['user', 'bio', 'created_on', 'url']
         extra_kwargs = {
-            'created_on': {
+            'last_updated': {
                 'read_only': True
             },
             'user': {
                 'read_only': True
-            }
+            },
         }
 
 

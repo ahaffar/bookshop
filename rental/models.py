@@ -3,15 +3,13 @@ from bookshop import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.contrib.auth import validators
 from django_countries import fields
-from django.db.models import signals
-from django.dispatch import receiver
 
 
 class UserManager(BaseUserManager):
     """"
     Model Manager for the User Model
     """
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(self, email, first_name, last_name, username, password=None):
         if not email:
             raise ValueError('a valid email address is required')
         email = self.normalize_email(email)
@@ -19,14 +17,15 @@ class UserManager(BaseUserManager):
             email=email,
             first_name=first_name,
             last_name=last_name,
+            username=username,
         )
         user.set_password(password)
         # user.has_perm('rental.view_user')
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, first_name, last_name, password):
-        user = self.create_user(email, first_name, last_name, password)
+    def create_superuser(self, email, first_name, last_name, username, password):
+        user = self.create_user(email, first_name, last_name, username, password)
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -66,25 +65,24 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user
+        return self.user.username
 
 
 class Author(models.Model):
     """
     A Model to store the Authors info
     """
-    first_name = models.CharField(max_length=40, blank=False, help_text='First name')
-    last_name = models.CharField(max_length=40, blank=False, help_text='Last name')
-    email = models.EmailField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_author = models.BooleanField(default=True, editable=True, )
 
     def __str__(self):
-        return '%s %sa' %(self.first_name, self.last_name)
+        return self.author.username
 
 
 class Publisher(models.Model):
@@ -110,7 +108,7 @@ class Borrowed(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='username of the borrower', on_delete=models.PROTECT)
     borrowed_date = models.DateTimeField(auto_now_add=True)
     title = models.ForeignKey(Book, on_delete=models.PROTECT)
-    returned_date = models.DateTimeField(null=True, blank=True)
+    returned_date = models.DateTimeField(null=True, blank=True,)
 
     def __str__(self):
         return '%s - Borrowed By (%s)' % (self.title, self.user)

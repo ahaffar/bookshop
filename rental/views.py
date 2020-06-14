@@ -18,7 +18,7 @@ class UserViewSets(viewsets.ModelViewSet):
     #                       ]
     authentication_classes = [TokenAuthentication, ]
     queryset = models.User.objects.all()
-    renderer_classes = [renderers.AdminRenderer, ]
+    renderer_classes = [renderers.AdminRenderer, renderers.BrowsableAPIRenderer, renderers.JSONRenderer]
     permission_classes = [rest_permissions.IsAuthenticated, permissions.UserViewPermissions]
     lookup_field = 'username'
 
@@ -41,6 +41,7 @@ class UserProfileViewSets(viewsets.ModelViewSet):
     queryset = models.UserProfile.objects.all()
     serializer_class = serializers.UserProfileSerializer
     renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer, ]
+    # lookup_field = 'user.username'
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
