@@ -32,6 +32,7 @@ class GroupViews(viewsets.ModelViewSet):
     queryset = django_models.Group.objects.all()
     renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer]
     lookup_field = 'name'
+    permission_classes = [rest_permissions.IsAdminUser]
 
 
 class UserProfileViewSets(viewsets.ModelViewSet):
@@ -54,7 +55,7 @@ class PublisherViewSets(viewsets.ModelViewSet):
 
 class BorrowedViewSet(viewsets.ModelViewSet):
     queryset = models.Borrowed.objects.all()
-    serializer_class = serializers.BookSerializer
+    serializer_class = serializers.BorrowedSerializer
     permission_classes = [rest_permissions.IsAuthenticated, ]
     authentication_classes = [TokenAuthentication, ]
 

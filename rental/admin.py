@@ -10,6 +10,35 @@ from rental.forms import CustomUserCreationForm, UserChangeForm
 class UserAdmin(auth_admin.UserAdmin):
     add_form = CustomUserCreationForm
     form = UserChangeForm
+    fieldsets = (
+        (None, {
+            'fields': (
+                'username', 'password'
+            )
+        }),
+        ('Personal_Info', {
+            'fields': (
+                'first_name',
+                'last_name',
+                'email',
+                'is_borrower'
+            )
+        }),
+        ('Permission_Info', {
+            'fields': (
+                'is_active',
+                'is_staff',
+                'is_superuser',
+                'groups', 'user_permissions'
+            )
+        }),
+    )
+    list_filter = ('is_superuser',
+                   'is_active',
+                   'is_borrower',
+                   'is_staff',
+                   'groups',
+                   )
     add_fieldsets = (
         (None,
          {

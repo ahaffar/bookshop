@@ -20,7 +20,6 @@ class UserManager(BaseUserManager):
             username=username,
         )
         user.set_password(password)
-        # user.has_perm('rental.view_user')
         user.save(using=self._db)
         return user
 
@@ -44,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     username = models.CharField(max_length=15, unique=True, null=True, blank=False,
                                 validators=(validators.UnicodeUsernameValidator, ))
+    is_borrower = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -108,7 +108,8 @@ class Borrowed(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='username of the borrower', on_delete=models.PROTECT)
     borrowed_date = models.DateTimeField(auto_now_add=True)
     title = models.ForeignKey(Book, on_delete=models.PROTECT)
-    returned_date = models.DateTimeField(null=True, blank=True,)
+    returned_date = models.DateField(blank=False, null=True)
+    last_updated = models.DateTimeField(auto_now=True, )
 
     def __str__(self):
         return '%s - Borrowed By (%s)' % (self.title, self.user)

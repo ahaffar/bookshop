@@ -70,3 +70,11 @@ class UserViewPermissions(permissions.BasePermission):
         return obj.username == request.user.username or \
                request.user.is_admin() or request.user.is_superuser
 
+
+class IsOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.id == request.user.id
+

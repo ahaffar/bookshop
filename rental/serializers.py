@@ -22,9 +22,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                     'input_type': 'password'
                 }
             },
-            'email': {
-                'read_only': True
-            },
         }
 
     def create(self, validated_data):
@@ -44,6 +41,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+
+    user = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
 
     class Meta:
         model = models.UserProfile
