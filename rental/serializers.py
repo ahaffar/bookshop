@@ -40,9 +40,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             return super().update(instance, validated_data)
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
+    url = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail', )
 
     class Meta:
         model = models.UserProfile

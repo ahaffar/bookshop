@@ -42,10 +42,14 @@ class UserProfileViewSets(viewsets.ModelViewSet):
     queryset = models.UserProfile.objects.all()
     serializer_class = serializers.UserProfileSerializer
     renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer, ]
-    # lookup_field = 'user.username'
+    lookup_field = 'user'
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_object(self):
+        queryset = self.filter_queryset(models.UserProfile.objects.get(user__username=self.kwargs.get('user')))
+        return queryset
 
 
 class PublisherViewSets(viewsets.ModelViewSet):
