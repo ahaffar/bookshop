@@ -3,6 +3,9 @@ from django_countries import serializers as countries_serializers
 from rental import models
 from django.contrib.auth.models import Group, Permission
 from rental.apps import RentalConfig
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -43,7 +46,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
-    url = serializers.HyperlinkedRelatedField(read_only=True, view_name='user-detail', )
+    url = serializers.HyperlinkedRelatedField(read_only=True, view_name='userprofile-detail', )
 
     class Meta:
         model = models.UserProfile
@@ -84,6 +87,8 @@ class BorrowedSerializer(serializers.ModelSerializer):
     """
     serializes Borrowed Model
     """
+    user = serializers.PrimaryKeyRelatedField(help_text='username of the borrower',
+                                              queryset=User.objects.filter(is_borrower=1))
 
     class Meta:
         model = models.Borrowed
