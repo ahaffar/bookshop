@@ -3,6 +3,7 @@ from bookshop import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.contrib.auth import validators
 from django_countries import fields
+from datetime import datetime, timedelta
 
 
 class UserManager(BaseUserManager):
@@ -91,7 +92,7 @@ class Author(models.Model):
     """
     A Model to store the Authors info
     """
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
     is_author = models.BooleanField(default=True, editable=True, )
 
     def __str__(self):
@@ -108,23 +109,40 @@ class Publisher(models.Model):
 
 
 class Book(models.Model):
+
+    class BookLanguage(models.TextChoices):
+        EN = 'EN', 'ENGLISH'
+        AR = 'AR', 'ARABIC'
+        FR = 'FR', 'FRENCH'
+        DE = 'DE', 'GERMAN'
+        ES = 'ES', 'SPANISH'
+        PT = 'PT', 'PORTUGUESE'
+
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
-    author = models.ManyToManyField(Author, related_name='authors')
+    author = models.ManyToManyField(Author, related_name='books')
     title = models.CharField(max_length=80, blank=False)
     published_date = models.DateField(null=True, blank=False)
     genre = models.ManyToManyField(Genre, related_name='books')
     isbn = models.CharField('ISBN', max_length=13, help_text='The ISBN of the Book - 13 Chars', default='XXXXXXXXXX')
+    language = models.CharField(max_length=2, choices=BookLanguage.choices, default=BookLanguage.EN)
 
     def __str__(self):
         return self.title
 
 
 class Borrowed(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='username of the borrower', on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='username of the borrower', on_delete=models.DO_NOTHING,
+                             related_name='borrowings')
     borrowed_date = models.DateTimeField(auto_now_add=True)
-    title = models.ForeignKey(Book, on_delete=models.PROTECT)
+    title = models.ForeignKey(Book, on_delete=models.DO_NOTHING, verbose_name='book')
     returned_date = models.DateField(blank=False, null=True)
     last_updated = models.DateTimeField(auto_now=True, )
+    is_returned = models.BooleanField(default=False,)
+    # False in order to hide it from admin
+    due_back = models.DateTimeField(default=datetime.now()+timedelta(days=1), editable=False)
+
+    class Meta:
+        ordering = ['-borrowed_date']
 
     def __str__(self):
         return '%s - Borrowed By (%s)' % (self.title, self.user)
