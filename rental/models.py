@@ -65,13 +65,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
+    class UserType(models.TextChoices):
+        FREE = 'FR', 'FREE'
+        BASIC = 'BS', 'BASIC'
+        PREMIUM = 'PR', 'PREMIUM'
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    user_type = models.CharField(max_length=2, choices=UserType.choices, default=UserType.FREE)
 
     def __str__(self):
         return self.user.username
+
+
+class Genre(models.Model):
+    name = models.CharField(max_length=30, help_text='The name of genre such as Drama, Art...')
+
+    def __str__(self):
+        return self.name
 
 
 class Author(models.Model):
@@ -96,9 +109,11 @@ class Publisher(models.Model):
 
 class Book(models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE)
-    author = models.ManyToManyField(Author)
+    author = models.ManyToManyField(Author, related_name='authors')
     title = models.CharField(max_length=80, blank=False)
     published_date = models.DateField(null=True, blank=False)
+    genre = models.ManyToManyField(Genre, related_name='books')
+    isbn = models.CharField('ISBN', max_length=13, help_text='The ISBN of the Book - 13 Chars', default='XXXXXXXXXX')
 
     def __str__(self):
         return self.title
