@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
-from rental.models import User, UserProfile, Book, Author, Publisher, Borrowed
+from rental.models import User, UserProfile, Book, Author, Publisher, Borrowed, Genre
 from rental.forms import CustomUserCreationForm, UserChangeForm
 
 
@@ -98,5 +98,6 @@ admin.site.register(Book)
 admin.site.register(Publisher)
 admin.site.register(Author)
 admin.site.register(Borrowed)
+admin.site.register(Genre)
 
 # Register your models here.

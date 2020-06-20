@@ -134,7 +134,8 @@ class Borrowed(models.Model):
     last_updated = models.DateTimeField(auto_now=True, )
     is_returned = models.BooleanField(default=False,)
     # False in order to hide it from admin
-    due_back = models.DateTimeField(default=datetime.now()+timedelta(days=1))
+    due_back = models.DateTimeField(blank=True, help_text='This field is not editable, it defaulted to day +1',
+                                    editable=False)
 
     class Meta:
         ordering = ['-borrowed_date']
