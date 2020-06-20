@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Case, When, IntegerField, Value
 from bookshop import settings
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth import validators
 from django_countries import fields
 from datetime import datetime, timedelta
@@ -80,6 +80,11 @@ class Author(models.Model):
     author = models.OneToOneField(User, on_delete=models.CASCADE, related_name='authors')
     is_author = models.BooleanField(default=True, editable=True, )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['author'], name='check_unique_author')
+        ]
+
     def __str__(self):
         return self.author.username
 
@@ -110,6 +115,11 @@ class Book(models.Model):
     genre = models.ManyToManyField(Genre, related_name='books')
     isbn = models.CharField('ISBN', max_length=13, help_text='The ISBN of the Book - 13 Chars', default='XXXXXXXXXX')
     language = models.CharField(max_length=2, choices=BookLanguage.choices, default=BookLanguage.EN)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['isbn'], name='unique_isbn', )
+        ]
 
     def __str__(self):
         return self.title
