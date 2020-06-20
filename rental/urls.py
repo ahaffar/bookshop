@@ -8,6 +8,7 @@ router.register('bio', views.UserProfileViewSets, )
 router.register('publishers', views.PublisherViewSets, )
 router.register('borrow', views.BorrowedViewSet, )
 router.register('groups', views.GroupViews, )
+router.register('authors', views.AuthorViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -77,7 +77,7 @@ class Author(models.Model):
     """
     A Model to store the Authors info
     """
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author')
+    author = models.OneToOneField(User, on_delete=models.CASCADE, related_name='authors')
     is_author = models.BooleanField(default=True, editable=True, )
 
     def __str__(self):

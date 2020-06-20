@@ -14,10 +14,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     # url = serializers.CharField(source='get_absolute_url', read_only=True)
     url = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field='username', read_only=True)
+    author = serializers.SlugRelatedField(source='authors', slug_field='is_author',
+                                          read_only=True)
 
     class Meta:
         model = models.User
-        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'url', 'username']
+        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'url', 'username', 'author']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -30,7 +32,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = models.User(email=validated_data['email'],
                            first_name=validated_data['first_name'],
-                           last_name=validated_data['last_name'])
+                           last_name=validated_data['last_name'],
+                           username=validated_data['username'])
         password = user.set_password(validated_data['password'])
         user.save()
         return user
@@ -68,13 +71,20 @@ class PublisherSerializer(countries_serializers.CountryFieldMixin, serializers.M
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.SlugRelatedField(source='author', slug_field='first_name',
+                                              read_only=True)
+    last_name = serializers.SlugRelatedField(source='author', slug_field='last_name',
+                                             read_only=True)
+    author = serializers.PrimaryKeyRelatedField(queryset=models.User.objects.filter(groups__name='Authors'))
+
     """
     Serializers Author Model
     """
 
     class Meta:
         model = models.Author
-        fields = ['id', 'first_name', 'last_name', 'email']
+        fields = ['id', 'first_name', 'last_name', 'author', ]
 
 
 class BookSerializer(serializers.ModelSerializer):

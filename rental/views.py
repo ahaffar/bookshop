@@ -57,6 +57,11 @@ class PublisherViewSets(viewsets.ModelViewSet):
     queryset = models.Publisher.objects.all()
 
 
+class AuthorViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.AuthorSerializer
+    queryset = models.Author.objects.all()
+
+
 class BorrowedViewSet(viewsets.ModelViewSet):
     queryset = models.Borrowed.objects.all()
     serializer_class = serializers.BorrowedSerializer
