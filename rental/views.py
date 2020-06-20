@@ -60,6 +60,7 @@ class PublisherViewSets(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AuthorSerializer
     queryset = models.Author.objects.all()
+    renderer_classes = [renderers.JSONRenderer, renderers.BrowsableAPIRenderer, renderers.AdminRenderer]
 
 
 class BorrowedViewSet(viewsets.ModelViewSet):
@@ -67,6 +68,11 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BorrowedSerializer
     permission_classes = [rest_permissions.IsAuthenticated, ]
     authentication_classes = [TokenAuthentication, ]
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.BookSerializer
+    queryset = models.Book.objects.all()
 
 
 

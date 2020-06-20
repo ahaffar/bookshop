@@ -86,7 +86,10 @@ class Author(models.Model):
         ]
 
     def __str__(self):
-        return self.author.username
+        return '%s %s' % (self.author.first_name, self.author.last_name)
+
+    def author_full_name(self):
+        return '%s %s' % (self.author.first_name, self.author.last_name)
 
 
 class Publisher(models.Model):

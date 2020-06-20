@@ -47,7 +47,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
-
     user = serializers.PrimaryKeyRelatedField(source='user.username', read_only=True)
     url = serializers.HyperlinkedRelatedField(read_only=True, view_name='userprofile-detail', )
 
@@ -70,27 +69,38 @@ class PublisherSerializer(countries_serializers.CountryFieldMixin, serializers.M
         fields = ['id', 'name', 'country', 'website']
 
 
-class AuthorSerializer(serializers.ModelSerializer):
-
-    first_name = serializers.SlugRelatedField(source='author', slug_field='first_name',
-                                              read_only=True)
-    last_name = serializers.SlugRelatedField(source='author', slug_field='last_name',
-                                             read_only=True)
-    author = serializers.PrimaryKeyRelatedField(queryset=models.User.objects.filter(groups__name='Authors'))
-
+class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializers Author Model
     """
 
+    # first_name = serializers.SlugRelatedField(source='author', slug_field='first_name',
+    #                                           read_only=True)
+    # last_name = serializers.SlugRelatedField(source='author', slug_field='last_name',
+    #                                          read_only=True)
+    author = serializers.PrimaryKeyRelatedField(queryset=models.User.objects.filter(groups__name='Authors'),
+                                                write_only=True)
+    name = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Author
-        fields = ['id', 'first_name', 'last_name', 'author', ]
+        fields = ['author', 'name', 'url']
+
+    def get_name(self, author):
+        return '%s %s' % (author.author.first_name, author.author.last_name)
 
 
 class BookSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(queryset=models.Genre.objects.all(), slug_field='name',
+                                         many=True)
+    publisher = serializers.SlugRelatedField(slug_field='name', queryset=models.Publisher.objects.all())
+    authors = serializers.PrimaryKeyRelatedField(many=True, queryset=models.Author.objects.all(),
+                                                 source='author', write_only=True)
+    author = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = models.Book
-        fields = '__all__'
+        fields = ['title', 'genre', 'author', 'publisher', 'published_date', 'isbn', 'language', 'authors']
 
 
 class BorrowedSerializer(serializers.ModelSerializer):

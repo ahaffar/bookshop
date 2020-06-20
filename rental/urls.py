@@ -9,6 +9,7 @@ router.register('publishers', views.PublisherViewSets, )
 router.register('borrow', views.BorrowedViewSet, )
 router.register('groups', views.GroupViews, )
 router.register('authors', views.AuthorViewSet)
+router.register('books', views.BookViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
