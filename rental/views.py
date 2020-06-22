@@ -62,20 +62,22 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AuthorSerializer
     queryset = models.Author.objects.all()
     renderer_classes = [renderers.JSONRenderer, renderers.BrowsableAPIRenderer, renderers.AdminRenderer]
+    # the below is not used but i keep it for reference
     # lookup_field = 'author__username'
-    lookup_field = 'username'
+    # the below should match the kwargs in the customized HyperLinkedIdentityField
+    lookup_field = 'obj_username'
 
     def get_object(self):
         queryset = self.filter_queryset(models.Author.objects.get(author__username=self.kwargs.get('username')))
         return queryset
 
-    @action(detail=True, url_name='books', url_path='books')
+    @action(detail=True, url_name='books', url_path='books', )
     def author_book_list(self, request, username):
         """
         retrieve the books list for the related author
         """
         books = models.Book.objects.filter(author__author__username=username)
-        serialized_books = serializers.BookSerializer(books, many=True)
+        serialized_books = serializers.BookDetailedSerializer(books, many=True)
         return Response(serialized_books.data, status=status.HTTP_200_OK)
 
 
@@ -87,8 +89,14 @@ class BorrowedViewSet(viewsets.ModelViewSet):
 
 
 class BookViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.BookSerializer
+    serializer_class = serializers.BookListSerializer
+    renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer]
     queryset = models.Book.objects.all()
+    lookup_field = 'slug'
 
+
+class GenreViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.GenreSerializer
+    queryset = models.Genre.objects.all()
 
 
