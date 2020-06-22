@@ -81,10 +81,12 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     author = serializers.PrimaryKeyRelatedField(queryset=models.User.objects.filter(groups__name='Authors'),
                                                 write_only=True)
     name = serializers.SerializerMethodField()
+    username = serializers.PrimaryKeyRelatedField(source='author.username', read_only=True)
+    url = serializers.HyperlinkedRelatedField(view_name='user-detail', read_only=True)
 
     class Meta:
         model = models.Author
-        fields = ['author', 'name', 'url']
+        fields = ['author', 'username', 'url', 'name']
 
     def get_name(self, author):
         return '%s %s' % (author.author.first_name, author.author.last_name)

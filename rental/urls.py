@@ -13,5 +13,7 @@ router.register('books', views.BookViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('auth/', views.AuthUser.as_view(), name='auth')
+    path('auth/', views.AuthUser.as_view(), name='auth'),
+    path('authors/<str:username>/books', views.AuthorViewSet.as_view({'get': 'author_book_list'}), name='books'),
+
 ]

@@ -1,4 +1,5 @@
 from rest_framework import viewsets, renderers, status
+from rest_framework.decorators import action
 from rest_framework import generics
 from rest_framework.response import Response
 from rental import serializers, permissions, models
@@ -61,6 +62,21 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AuthorSerializer
     queryset = models.Author.objects.all()
     renderer_classes = [renderers.JSONRenderer, renderers.BrowsableAPIRenderer, renderers.AdminRenderer]
+    # lookup_field = 'author__username'
+    lookup_field = 'username'
+
+    def get_object(self):
+        queryset = self.filter_queryset(models.Author.objects.get(author__username=self.kwargs.get('username')))
+        return queryset
+
+    @action(detail=True, url_name='books', url_path='books')
+    def author_book_list(self, request, username):
+        """
+        retrieve the books list for the related author
+        """
+        books = models.Book.objects.filter(author__author__username=username)
+        serialized_books = serializers.BookSerializer(books, many=True)
+        return Response(serialized_books.data, status=status.HTTP_200_OK)
 
 
 class BorrowedViewSet(viewsets.ModelViewSet):
