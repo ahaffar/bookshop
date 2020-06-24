@@ -1,6 +1,6 @@
 from rest_framework import viewsets, renderers, status
 from rest_framework.decorators import action
-from rest_framework import generics
+from rest_framework import serializers as rest_serializers
 from rest_framework.response import Response
 from rental import serializers, permissions, models
 from rest_framework.authentication import TokenAuthentication
@@ -37,7 +37,6 @@ class GroupViews(viewsets.ModelViewSet):
 
 
 class UserProfileViewSets(viewsets.ModelViewSet):
-
     authentication_classes = [TokenAuthentication, ]
     permission_classes = [rest_permissions.IsAuthenticated, permissions.UserProfileOwnerUpdate, ]
     queryset = models.UserProfile.objects.all()
@@ -87,6 +86,24 @@ class BorrowedViewSet(viewsets.ModelViewSet):
     permission_classes = [rest_permissions.IsAuthenticated, ]
     authentication_classes = [TokenAuthentication, ]
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        profile = models.UserProfile.objects.get(user=serializer.validated_data['user'])
+        borrowed_book_count = models.Borrowed.objects.filter(user=serializer.validated_data['user'],
+                                                             is_returned=False).count()
+        error_msg = [
+            "The user package ('%s') not allowing to rent more than %s book(s)" % (profile.user_type, profile.book_limit),
+            "Current rented books are : %s" % (models.Borrowed.objects.get(user=serializer.validated_data['user'],
+                                                                         is_returned=False))
+        ]
+        if profile.book_limit == borrowed_book_count:
+            raise rest_serializers.ValidationError(detail=error_msg,
+                                                   code=status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class BookViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BookListSerializer
@@ -98,5 +115,3 @@ class BookViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GenreSerializer
     queryset = models.Genre.objects.all()
-
-
