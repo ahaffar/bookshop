@@ -68,15 +68,15 @@ class AuthorViewSet(viewsets.ModelViewSet):
     lookup_field = 'obj_username'
 
     def get_object(self):
-        queryset = self.filter_queryset(models.Author.objects.get(author__username=self.kwargs.get('username')))
+        queryset = self.filter_queryset(models.Author.objects.get(author__username=self.kwargs.get('obj_username')))
         return queryset
 
     @action(detail=True, url_name='books', url_path='books', )
-    def author_book_list(self, request, username):
+    def author_book_list(self, request, **kwargs):
         """
         retrieve the books list for the related author
         """
-        books = models.Book.objects.filter(author__author__username=username)
+        books = models.Book.objects.filter(author__author__username=self.kwargs.get('obj_username'))
         serialized_books = serializers.BookDetailedSerializer(books, many=True)
         return Response(serialized_books.data, status=status.HTTP_200_OK)
 

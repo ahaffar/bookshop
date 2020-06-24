@@ -12,14 +12,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializers User Model
     """
-    # url = serializers.CharField(source='get_absolute_url', read_only=True)
-    url = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field='username', read_only=True)
+    url = serializers.HyperlinkedIdentityField(lookup_field='username', view_name='user-detail')
+    # url = serializers.HyperlinkedRelatedField(view_name='user-detail', lookup_field='username', read_only=True)
     author = serializers.SlugRelatedField(source='authors', slug_field='is_author',
                                           read_only=True)
 
     class Meta:
         model = models.User
-        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'url', 'username', 'author']
+        fields = ['email', 'first_name', 'last_name', 'password', 'username', 'author', 'url']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -155,7 +155,7 @@ class BookHyperLinkedIdentityField(serializers.HyperlinkedIdentityField):
 class BookListSerializer(serializers.HyperlinkedModelSerializer):
 
     # url = serializers.HyperlinkedIdentityField(view_name='book-detail', read_only=True, lookup_field='slug')
-    url = BookHyperLinkedIdentityField(view_name='book-detail', read_only=True)
+    url = BookHyperLinkedIdentityField(view_name='book-detail', read_only=True, )
 
     class Meta:
         model = models.Book
@@ -167,11 +167,15 @@ class BorrowedSerializer(serializers.ModelSerializer):
     serializes Borrowed Model
     """
     user = serializers.PrimaryKeyRelatedField(help_text='username of the borrower',
-                                              queryset=User.objects.filter(is_borrower=1))
+                                              queryset=User.objects.filter(groups__name__in=('library_users',
+                                                                                             'librarians')),
+                                              write_only=True)
+    username = serializers.SlugRelatedField(read_only=True, slug_field='username', source='user')
+    book = serializers.SlugRelatedField(source='title', slug_field='title', queryset=models.Book.objects.all())
 
     class Meta:
         model = models.Borrowed
-        fields = '__all__'
+        fields = ['user', 'username', 'book', 'is_returned', 'borrowed_date']
 
 
 
