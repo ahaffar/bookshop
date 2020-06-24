@@ -10,10 +10,11 @@ router.register('borrow', views.BorrowedViewSet, )
 router.register('groups', views.GroupViews, )
 router.register('authors', views.AuthorViewSet)
 router.register('books', views.BookViewSet)
+router.register('genre', views.GenreViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('auth/', views.AuthUser.as_view(), name='auth'),
-    path('authors/<str:username>/books', views.AuthorViewSet.as_view({'get': 'author_book_list'}), name='books'),
+    # path('authors/<str:username>/books', views.AuthorViewSet.as_view({'get': 'author_book_list'}), name='books'),
 
 ]

@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.contrib.auth import validators
 from django_countries import fields
 from datetime import datetime, timedelta
+from rest_framework.reverse import reverse
 
 
 class UserManager(BaseUserManager):
@@ -118,6 +119,7 @@ class Book(models.Model):
     genre = models.ManyToManyField(Genre, related_name='books')
     isbn = models.CharField('ISBN', max_length=13, help_text='The ISBN of the Book - 13 Chars', default='XXXXXXXXXX')
     language = models.CharField(max_length=2, choices=BookLanguage.choices, default=BookLanguage.EN)
+    slug = models.SlugField(null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -126,6 +128,9 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+    # def get_absolute_url(self):
+        # return reverse('book-detail', kwargs={'slug': self.slug})
 
 
 class Borrowed(models.Model):
