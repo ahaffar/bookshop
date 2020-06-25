@@ -80,10 +80,12 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class PublisherSerializer(countries_serializers.CountryFieldMixin, serializers.ModelSerializer):
+class PublisherSerializer(countries_serializers.CountryFieldMixin, serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='publisher-detail', lookup_field='pk')
+
     class Meta:
         model = models.Publisher
-        fields = ['id', 'name', 'country', 'website']
+        fields = ['name', 'country', 'website', 'url']
 
 
 class AuthorHyperLinkedIdentityField(serializers.HyperlinkedIdentityField):
@@ -117,7 +119,8 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Author
         fields = ['author', 'name', 'username', 'url', ]
 
-    def get_name(self, author):
+    @staticmethod
+    def get_name(author):
         return '%s %s' % (author.author.first_name, author.author.last_name)
 
 

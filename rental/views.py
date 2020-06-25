@@ -56,6 +56,12 @@ class PublisherViewSets(viewsets.ModelViewSet):
     serializer_class = serializers.PublisherSerializer
     queryset = models.Publisher.objects.all()
 
+    @action(methods=["GET", ], detail=True, url_path='books', url_name='name')
+    def publisher_list_books(self, request, **kwargs):
+        books = self.filter_queryset(models.Book.objects.filter(publisher=self.kwargs.get('pk')))
+        serialized_books = serializers.BookDetailedSerializer(books, many=True)
+        return Response(serialized_books.data, status=status.HTTP_200_OK)
+
 
 class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AuthorSerializer
@@ -111,7 +117,18 @@ class BookViewSet(viewsets.ModelViewSet):
     queryset = models.Book.objects.all()
     lookup_field = 'slug'
 
+    def get_serializer_class(self):
+        if self.action == "list":
+            return serializers.BookListSerializer
+        return serializers.BookDetailedSerializer
+
 
 class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GenreSerializer
     queryset = models.Genre.objects.all()
+
+    @action(methods=["GET"], detail=True, name='books', url_path='books')
+    def list_books(self, request, **kwargs):
+        books = self.filter_queryset(models.Book.objects.filter(genre=self.kwargs.get('pk')))
+        serialized_books = serializers.BookDetailedSerializer(books, many=True)
+        return Response(serialized_books.data, status=status.HTTP_200_OK)
