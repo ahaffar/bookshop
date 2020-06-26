@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return '%s %s' % (self.first_name, self.last_name)
 
     def is_admin(self):
-        return self.groups.filter(name='librarians').exists()
+        return self.groups.filter(name='library_admins').exists()
 
 
 class Genre(models.Model):

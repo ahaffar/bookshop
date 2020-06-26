@@ -51,6 +51,13 @@ class UserProfileViewSets(viewsets.ModelViewSet):
         queryset = self.filter_queryset(models.UserProfile.objects.get(user__username=self.kwargs.get('user')))
         return queryset
 
+    @action(detail=True, url_name='borrow', url_path='borrow', description='List Books Borrowed by User',
+            permission_classes=[permissions.IsOwner, ])
+    def borrowed_books(self, request, **kwargs):
+        borrowed = self.filter_queryset(models.Borrowed.objects.filter(user__username=self.kwargs.get('user'),))
+        serializer = serializers.BorrowedSerializer(borrowed, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class PublisherViewSets(viewsets.ModelViewSet):
     serializer_class = serializers.PublisherSerializer
@@ -89,7 +96,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 class BorrowedViewSet(viewsets.ModelViewSet):
     queryset = models.Borrowed.objects.all()
     serializer_class = serializers.BorrowedSerializer
-    permission_classes = [rest_permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAdmin, ]
     authentication_classes = [TokenAuthentication, ]
 
     def create(self, request, *args, **kwargs):
@@ -116,6 +123,8 @@ class BookViewSet(viewsets.ModelViewSet):
     renderer_classes = [renderers.AdminRenderer, renderers.JSONRenderer, renderers.BrowsableAPIRenderer]
     queryset = models.Book.objects.all()
     lookup_field = 'slug'
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [permissions.BookSerializer]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -126,6 +135,8 @@ class BookViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GenreSerializer
     queryset = models.Genre.objects.all()
+    permission_classes = [permissions.IsAdmin, ]
+    authentication_classes = [TokenAuthentication]
 
     @action(methods=["GET"], detail=True, name='books', url_path='books')
     def list_books(self, request, **kwargs):
