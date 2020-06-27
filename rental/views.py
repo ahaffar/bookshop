@@ -78,6 +78,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
     # lookup_field = 'author__username'
     # the below should match the kwargs in the customized HyperLinkedIdentityField
     lookup_field = 'obj_username'
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = [permissions.ReadOnlyPermission, ]
 
     def get_object(self):
         queryset = self.filter_queryset(models.Author.objects.get(author__username=self.kwargs.get('obj_username')))
