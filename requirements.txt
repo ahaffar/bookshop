@@ -1,5 +1,5 @@
 appdirs==1.4.4
-asgiref==3.2.7
+asgiref ==3.2.7
 cfgv==3.1.0
 distlib==0.3.1
 Django==3.0.7
@@ -12,7 +12,6 @@ importlib-resources==2.0.1
 mysqlclient==1.4.6
 nodeenv==1.4.0
 pendulum==2.1.0
-pkg-resources==0.0.0
 pre-commit==2.5.1
 python-dateutil==2.8.1
 pytz==2020.1
