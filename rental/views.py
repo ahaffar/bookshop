@@ -28,7 +28,7 @@ class UserViewSets(viewsets.ModelViewSet):
         renderers.JSONRenderer,
     ]
     permission_classes = [
-        rest_permissions.IsAuthenticated,
+        # rest_permissions.IsAuthenticated,
         permissions.UserViewPermissions,
     ]
     lookup_field = "username"

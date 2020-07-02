@@ -55,7 +55,11 @@ class UserViewPermissions(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         elif request.method == "POST":
-            return request.user.is_admin() or request.user.is_superuser
+            return (
+                request.user.is_anonymous
+                or request.user.is_admin()
+                or request.user.is_superuser
+            )
         elif request.method in ("PUT", "PATCH"):
             return (
                 request.user.has_perm(
@@ -73,7 +77,7 @@ class UserViewPermissions(permissions.BasePermission):
         return False
 
     def has_object_permission(self, request, view, obj):
-        return (
+        return request.user.is_authenticated and (
             obj.username == request.user.username
             or request.user.is_admin()
             or request.user.is_superuser
