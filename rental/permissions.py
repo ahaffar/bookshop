@@ -1,5 +1,4 @@
 from rest_framework import permissions, exceptions
-import copy
 
 # def has_perm(user):
 #     return user.groups.filter(name__in=['librarians', ]).exists()
