@@ -53,6 +53,8 @@ class UserViewPermissions(permissions.BasePermission):
         model_name = view.queryset.model._meta.model_name
 
         if request.method in permissions.SAFE_METHODS:
+            if request.user.is_anonymous:
+                return False
             return True
         elif request.method == "POST":
             return (
