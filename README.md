@@ -44,3 +44,11 @@ from the root of the repo. Now, every commit will be tested for a few easily-fix
  - python3 -m venv venv `this would create a new virtual-env called venv in a subdirectory venv, the venv name is added to .gitignore file`
  - modify the database settings on the `settings.py` file
  - run `python manage.py server`
+
+ ### DB Diagram
+ The DB diagram had been created using dbdiagram.io `A free, simple tool to draw ER diagrams by just writing code.
+Designed for developers and data analysts. `
+
+ Full example can be [found on](https://dbdiagram.io/d/5efee7800425da461f043365)
+
+![alt text](https://ipolls-assets.s3.us-east-2.amazonaws.com/bookshop_db_2.png "Bookshop db diagram")
