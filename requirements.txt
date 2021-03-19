@@ -5,7 +5,7 @@ distlib==0.3.1
 Django==3.0.7
 django-countries==6.1.2
 django-gravatar2==1.4.4
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 filelock==3.0.12
 identify==1.4.20
 importlib-metadata==1.7.0
